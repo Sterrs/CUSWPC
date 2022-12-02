@@ -1,0 +1,14 @@
+ - Check people's emails are actually correct
+ - Update the main GNUCash file
+ - Copy it to CUSWPC.gnucash
+ - Extract the csv using extract_csv.py; this also generates [team]_bills_to_send.py
+ - Turn the csv into tex using bill_csv_to_tex.py
+ - Run `for f in tex/*.tex; do pdflatex "$f"; done` in the bills directory
+ - Copy all the bills to the danger/actual_bills directory
+ - Copy whichever team you want to send the bills to to the danger directory
+ - MODIFY THE bills_to_send.csv FILE TO REMOVE PEOPLE WHO SHOULDN'T BE SENT A BILL
+ - Run the send_bills.py script
+ - Realise it didn't actually send any bills because you made it not do that
+ - Modify the script so it's primed, and run it again
+ - Hope nothing goes wrong
+ - Good luck mate
