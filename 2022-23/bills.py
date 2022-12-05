@@ -52,31 +52,26 @@ def read_transactions():
                     teams[team_name][accname] = []
 
                 amount = amount.replace(",","")
-                date = datetime.strptime(date, f"%d/%m/{"%Y" if sys.platform.startswith("win") else "%y"}")
+                date = datetime.strptime(date, f"%d/%m/{'%Y' if sys.platform.startswith('win') else '%y'}")
                 transaction = (date, description, -round((float(amount))*100))
                 teams[team_name][accname].append(transaction)
 
         return teams
 
 
+# Generate breakdown, returning four different values, the dates, the descriptions, the amounts and the total.
 def generate_breakdown(transactions):
-    longest_desc = 0
-    longest_amount = 0
     total = 0
-    for date, description, amount in transactions:
-        total += amount
-        if len(description) > longest_desc:
-            longest_desc = len(description)
-        amount_length = len(format_amount(amount))
-        if amount_length > longest_amount:
-            longest_amount = amount_length
+    dates = []
+    descriptions = []
+    amounts = []
 
-    breakdown = "Date     Details".ljust(9 + longest_desc) + " Amount\n"
     for date, description, amount in transactions:
-        breakdown += f"{date.strftime('%d/%m/%y')} {description.ljust(longest_desc)} {format_amount(amount).rjust(longest_amount)}\n"
-    # Don't add total, it causes confusion
-    # breakdown += f"TOTAL:".rjust(9 + longest_desc) + " " + format_amount(total).rjust(longest_amount)
-    return breakdown, round(total / 100, 2)
+        dates.append(f"{date.strftime('%d/%m/%y')}")
+        descriptions.append(f"{description}")
+        total += amount
+        amounts.append(f"{format_amount(amount)}")
+    return "\n".join(dates), "\n".join(descriptions), "\n".join(amounts), round(total / 100, 2)
 
 
 def write_bills(accounts, transactions):
@@ -84,13 +79,12 @@ def write_bills(accounts, transactions):
         csvwriter = csv.writer(billsfile)
         for name, items in transactions[TEAM].items():
             email = accounts[TEAM][name]
-            breakdown, total = generate_breakdown(items)
-            csvwriter.writerow([name, email, breakdown, total])
+            dates, descriptions, amounts, total = generate_breakdown(items)
+            csvwriter.writerow([name, email, dates, descriptions, amounts, total])
             
 
 if __name__ == "__main__":
     accounts = read_accounts()
-    print(accounts)
     transactions = read_transactions()
     write_bills(accounts, transactions)
 
