@@ -1,4 +1,4 @@
-import csv
+import csv, sys
 from datetime import datetime
 
 # Unused by the code, just a reminder
@@ -52,7 +52,7 @@ def read_transactions():
                     teams[team_name][accname] = []
 
                 amount = amount.replace(",","")
-                date = datetime.strptime(date, "%d/%m/%y")
+                date = datetime.strptime(date, f"%d/%m/{"%Y" if sys.platform.startswith("win") else "%y"}")
                 transaction = (date, description, -round((float(amount))*100))
                 teams[team_name][accname].append(transaction)
 
@@ -80,7 +80,7 @@ def generate_breakdown(transactions):
 
 
 def write_bills(accounts, transactions):
-    with open(BILLS, "w") as billsfile:
+    with open(BILLS, "w", newline="") as billsfile:
         csvwriter = csv.writer(billsfile)
         for name, items in transactions[TEAM].items():
             email = accounts[TEAM][name]
